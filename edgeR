@@ -1,0 +1,51 @@
+## Differntial Test Analysis Using all data
+
+
+# combine datasets together 
+
+Etot<-data.frame(E3,E8[,2:7])
+
+head(Etot)
+dim(Etot)
+
+#Remove GeneID List
+
+Etot_raw<-Etot[,2:16]
+
+
+dayst<- c(rep("E3",3),rep("E5",3),rep("E8",3),rep("E8",2),rep("E16",2),rep("E18",2))
+dayst
+dtot=DGEList(counts=Etot_raw,group=factor(dayst))
+
+dtot
+
+# TMM Normalization 
+dtot<-calcNormFactors(dtot)
+
+# set up design matrix
+design.t<-model.matrix(~dayst)
+rownames(design.t)<-colnames(dtot)
+design.t
+
+norm.counts.tot <- cpm(dtot)*1e6
+norm.counts.tot
+
+###Generalized Linear Model Differential Analysis Test
+
+design.mat_tot <- model.matrix(~ 0 + dtot$samples$group)
+colnames(design.mat_tot) <- levels(dtot$samples$group)
+design.mat_tot
+
+dtot_2 <- estimateGLMCommonDisp(dtot,design.mat_tot)
+dtot_2 <- estimateGLMTrendedDisp(dtot_2,design.mat_tot, method="power")
+dtot_2 <- estimateGLMTagwiseDisp(dtot_2,design.mat_tot)
+
+# fit the model
+fit_tot <- glmFit(dtot_2, design.mat_tot)
+
+# liklihood ratio test 
+lrt318_tot <- glmLRT(fit_tot, contrast=c(0,1,-1,0,0))
+lrt318_tot
+
+# Extract top 200 differentially expressed genes
+x318<-topTags(lrt318_tot, n=200)
