@@ -1,4 +1,4 @@
-#FASTQ files were processed using the following application in CyVerse Discovery Environment: [https://de.iplantcollaborative.org/de/]
+#FASTQ files were processed using the following application in CyVerse Discovery Environment: https://de.iplantcollaborative.org/de/
 
 #The following link is a tutorial provided by Cyverse to use the "Concatenate Multiple Files" App:
 #https://wiki.cyverse.org/wiki/display/DEapps/Concatenate+Multiple+Files
@@ -9,4 +9,12 @@
 #The following link is a tutorial provided by Cyverse to use the "HISAT2-index-align-2.1" App:
 #https://wiki.cyverse.org/wiki/display/TUT/RNA-seq+Tutorial-+HISAT2%2C+StringTie+and+Ballgown
 
-#MultiQC Documentation: https://multiqc.info
+#The "MultiQC" App in CyVerse DE is available at the following URL:
+#https://de.cyverse.org/de/?type=apps&app-id=38c33b64-7218-11e7-b74c-008cfa5ae621&system-id=de
+#The following link provides documentation for MultiQC aggregate FastQC and HISAT reports: 
+#https://multiqc.info
+
+#The "featureCounts_1.6.0" App in CyVerse DE is available at the following URL:
+#https://de.cyverse.org/de/?type=apps&app-id=edf1e4cc-2956-11e8-b342-008cfa5ae621&system-id=de
+#The following link provides documentation for featureCounts: 
+#http://bioinf.wehi.edu.au/featureCounts/
