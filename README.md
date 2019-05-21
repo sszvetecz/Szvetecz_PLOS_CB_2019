@@ -14,13 +14,20 @@ Data is available in NCBI GEO under the accession numbers [GSE89541](https://www
 
 | Software | Version | URL | 
 | --- | --- | --- |
+| Concatenate Multiple Files | - | https://wiki.cyverse.org/wiki/display/DEapps/Concatenate+Multiple+Files |
 | FastQC | 0.11.5 | http://www.bioinformatics.babraham.ac.uk/projects/fastqc/ |
+| HISAT2-index-align | 2.1 | https://ccb.jhu.edu/software/hisat2/index.shtml |
 | MultiQC | 1.7 | https://multiqc.info|
+| featureCounts | 1.6.0  | http://bioinf.wehi.edu.au/featureCounts/ |
+
 
 
 ## Data analysis walkthroughs & code
 
 Walkthroughs and code used for all of the quality assessment and data analysis steps are available in each of the below links.
 
-1. [Quality assessment with FastQC](https://github.com/enkera/Enkera-Marcello-scidata2018-Celegans-rnaseq-diet/blob/master/walkthroughs-code/fastqc)
-2. [Quality Analysis summary with MultiQC](https://github.com/enkera/Enkera-Marcello-scidata2018-Celegans-rnaseq-diet/blob/master/walkthroughs-code/MutliQC)
+1. [Combining multiple FASTQ files for a sample into a single FASTQ file](https://github.com/enkera/Szvetecz_PLOS_CB_2019/blob/master/code%20%26%20walkthroughs/sequence%20prep%20%26%20QC)
+2. [Quality assessment of sequencing reads with FastQC](https://github.com/enkera/Szvetecz_PLOS_CB_2019/blob/master/code%20%26%20walkthroughs/sequence%20prep%20%26%20QC)
+3. [HISAT2 alignment of sequencing reads](https://github.com/enkera/Szvetecz_PLOS_CB_2019/blob/master/code%20%26%20walkthroughs/sequence%20prep%20%26%20QC)
+4. [Quality Assessment and alignment summary aggregate reports with MultiQC](https://github.com/enkera/Szvetecz_PLOS_CB_2019/blob/master/code%20%26%20walkthroughs/sequence%20prep%20%26%20QC)
+5. 
