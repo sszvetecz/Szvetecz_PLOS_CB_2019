@@ -26,8 +26,9 @@ Data is available in NCBI GEO under the accession numbers [GSE89541](https://www
 
 Walkthroughs and code used for all of the quality assessment and data analysis steps are available in each of the below links.
 
-1. [Combining multiple FASTQ files for a sample into a single FASTQ file](https://github.com/enkera/Szvetecz_PLOS_CB_2019/blob/master/code%20%26%20walkthroughs/sequence%20prep%20%26%20QC)
+1. [Combining multiple FASTQ files/sample into a single file](https://github.com/enkera/Szvetecz_PLOS_CB_2019/blob/master/code%20%26%20walkthroughs/sequence%20prep%20%26%20QC)
 2. [Quality assessment of sequencing reads with FastQC](https://github.com/enkera/Szvetecz_PLOS_CB_2019/blob/master/code%20%26%20walkthroughs/sequence%20prep%20%26%20QC)
 3. [HISAT2 alignment of sequencing reads](https://github.com/enkera/Szvetecz_PLOS_CB_2019/blob/master/code%20%26%20walkthroughs/sequence%20prep%20%26%20QC)
 4. [Quality Assessment and alignment summary aggregate reports with MultiQC](https://github.com/enkera/Szvetecz_PLOS_CB_2019/blob/master/code%20%26%20walkthroughs/sequence%20prep%20%26%20QC)
-5. 
+5. [Differential expression analysis of RNA-seq data using EdgeR](https://github.com/enkera/Szvetecz_PLOS_CB_2019/blob/master/code%20%26%20walkthroughs/normalization%20%26%20plots)
+6. [Generation of Gene Count, MDS, and Heatmap plots ](https://github.com/enkera/Szvetecz_PLOS_CB_2019/blob/master/code%20%26%20walkthroughs/normalization%20%26%20plots)
