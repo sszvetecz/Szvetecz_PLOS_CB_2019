@@ -19,6 +19,8 @@ Data is available in NCBI GEO under the accession numbers [GSE89541](https://www
 | HISAT2-index-align | 2.1 | https://ccb.jhu.edu/software/hisat2/index.shtml |
 | MultiQC | 1.7 | https://multiqc.info|
 | featureCounts | 1.6.0  | http://bioinf.wehi.edu.au/featureCounts/ |
+| edgeR | 3.9  | https://bioconductor.org/packages/release/bioc/html/edgeR.html |
+
 
 
 
