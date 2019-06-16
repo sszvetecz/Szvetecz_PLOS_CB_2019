@@ -1,51 +1,56 @@
-## Differntial Test Analysis Using all data
+################################################################
+## Differntial Analysis Test Using Both Datasets (GSE & GSE ) ##
+################################################################
 
-
-# combine datasets together 
-
+## combine datasets together 
 Etot<-data.frame(E3,E8[,2:7])
-
 head(Etot)
+
+# check dimensions are 24881 by 16 
 dim(Etot)
 
-#Remove GeneID List
-
+#Remove GeneID List in first column
 Etot_raw<-Etot[,2:16]
 
-
+# create factor list for each sample day of development
 dayst<- c(rep("E3",3),rep("E5",3),rep("E8",3),rep("E8",2),rep("E16",2),rep("E18",2))
 dayst
-dtot=DGEList(counts=Etot_raw,group=factor(dayst))
 
+# get DGEList by using raw counts and day list
+dtot=DGEList(counts=Etot_raw,group=factor(dayst))
 dtot
 
 # TMM Normalization 
 dtot<-calcNormFactors(dtot)
 
-# set up design matrix
-design.t<-model.matrix(~dayst)
-rownames(design.t)<-colnames(dtot)
-design.t
-
+# logcpm normalized counts
 norm.counts.tot <- cpm(dtot)*1e6
 norm.counts.tot
 
-###Generalized Linear Model Differential Analysis Test
+#########################################################
+## Generalized Linear Model Differential Analysis Test ##
+#########################################################
 
+# set up design matrix using 0 as intercept and group (days) 
 design.mat_tot <- model.matrix(~ 0 + dtot$samples$group)
+
+# set the levels in each group (days of development) to column names for design matrix 
 colnames(design.mat_tot) <- levels(dtot$samples$group)
 design.mat_tot
 
+# Use different functions to find estimated error in the generalized linear model 
 dtot_2 <- estimateGLMCommonDisp(dtot,design.mat_tot)
 dtot_2 <- estimateGLMTrendedDisp(dtot_2,design.mat_tot, method="power")
 dtot_2 <- estimateGLMTagwiseDisp(dtot_2,design.mat_tot)
 
-# fit the model
+## fit the model by generalized linear model method
+# must use orginal design matrix and estimated error to run
 fit_tot <- glmFit(dtot_2, design.mat_tot)
 
-# liklihood ratio test 
+# perform liklihood ratio test using a contrast matrix to find list of differntially expressed genes
 lrt318_tot <- glmLRT(fit_tot, contrast=c(0,1,-1,0,0))
 lrt318_tot
 
-# Extract top 200 differentially expressed genes
+# Extract top 200 differentially expressed genes from test
+# can select any number of top genes by using 'n= ' function 
 x318<-topTags(lrt318_tot, n=200)
