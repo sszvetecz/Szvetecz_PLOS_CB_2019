@@ -1,14 +1,20 @@
 ## Plots used in Paper
 
-## Sample Distance (MDS Plot)
+################################
+## Sample Distance (MDS Plot) ##
+################################
+
 plotMDS(dtot, method="bcv", col=as.numeric(dtot$samples$group))
 
+###############
+## HEAT MAP ###
+###############
 
-## HEAT MAP
-dtot
+# get logcpm normalized values from raw counts
 logcpm.tot <- cpm(dtot, prior.count=2, log=TRUE)
 head(logcpm.tot)
 
+# Find variance for each gene in dataset
 var_genes.tot <- apply(logcpm.tot, 1, var)
 head(var_genes.tot)
 var_genes.tot
@@ -18,13 +24,13 @@ select_var.tot <- names(sort(var_genes.tot, decreasing=TRUE))[1:200]
 head(select_var.tot)
 select_var.tot
 
-# Subset logcounts matrix
+# Subset the top 200 most variable genes from logcounts matrix
 highly_variable_lcpm.tot <- logcpm.tot[select_var.tot,]
 dim(highly_variable_lcpm.tot)
-
 head(highly_variable_lcpm.tot)
+
+# write into csv
 write.csv(highly_variable_lcpm.tot,"/Users/sarah/Desktop/Honors Project/top200.csv")
-dim(highly_variable_lcpm.tot)
 
 ## Colors for Heatmap
 mypalette <- brewer.pal(11,"RdYlBu")
@@ -32,14 +38,15 @@ morecols <- colorRampPalette(mypalette)
 
 # Set up color vector for day variable
 col.cell.tot <- c("purple","orange","blue","pink","green","red")[dtot$samples$group]
-dtot$samples
 col.cell.tot
 
 # Plot the heatmap
 heatmap.2(highly_variable_lcpm.tot,col=rev(morecols(50)),trace="none", main="Top 200 most variable genes across samples",ColSideColors=col.cell.tot,scale="row",labCol=dtot$samples$group)
 
+##########################
+## GENE EXPRESSION PLOTS ##
+##########################
 
-## GENE EXPRESSION PLOT
 genes_plot.test<-read.csv("/Users/sarah/Desktop/Honors Project/genes.plot.test.csv",header=T)
 genes_plot.test<-data.frame(genes_plot.test)
 
