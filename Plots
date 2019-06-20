@@ -96,3 +96,6 @@ tf_boxplot<- ggplot(data=tfm) + geom_boxplot(aes(x=Day,y=logcpm,fill=Day)) + fac
 
 # add title
 tf_boxplot + ggtitle("TF Gene Expressions")
+
+
+
