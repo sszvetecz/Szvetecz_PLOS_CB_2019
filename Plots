@@ -47,24 +47,52 @@ heatmap.2(highly_variable_lcpm.tot,col=rev(morecols(50)),trace="none", main="Top
 ## GENE EXPRESSION PLOTS ##
 ##########################
 
-genes_plot.test<-read.csv("/Users/sarah/Desktop/Honors Project/genes.plot.test.csv",header=T)
-genes_plot.test<-data.frame(genes_plot.test)
+library(reshape2)
+library(ggplot2)
 
-# Assign each row a gene name
-MOB3B<-genes_plot.test[1,2:7]
-PDE6C<-genes_plot.test[2,2:7]
-CLUL1<-genes_plot.test[3,2:7]
-CDK1<-genes_plot.test[4,2:7]
-ENO2<-genes_plot.test[5,2:7]
+## PR Gene Expression Boxplots
+pr<-read.csv("/Users/sarah/Desktop/Honors Project/PR_genes.csv",header=T)
+head(pr)
+
+# create dataframe
+pr<-data.frame(pr)
+
+# Melt into one long dataframe
+prm <- melt(pr)
+
+# define value as logcpm
+logcpm<-prm$value 
+
+# factor devlopment days in correct order
+prm$Day <- factor(prm$Day, levels=c("E3", "E5", "E8", "E16", "E18"))
+prm$Day
+
+# create boxplot
+pr_boxplot<- ggplot(data=prm) + geom_boxplot(aes(x=Day,y=logcpm,fill=Day)) + facet_wrap(~variable)
+
+# add title
+pr_boxplot + ggtitle("PR Gene Expressions")
 
 
-# Create Plot
-x1=1:6
-plot(x=x1,y=MOB3B,xaxt="n", col="blue",type="l",ylim= c(-3,14),ylab="Log CPM", xlab="Day of Embryonic Development", main="Change in Gene Expression Across E3-E18 of Retina Development")
-lines(x=x1,y=PDE6C,col="green",lty=2)
-lines(x=x1,y=CLUL1,col="red",lty=3)
-lines(x=x1,y=CDK1,col="orange",lty=4)
-lines(x=x1,y=ENO2,col="purple",lty=5)
-legend("topleft",title="Gene Name",
-       legend=c("MOB3B","PDE6C","CLUL1","CDK1","ENO2"),col=c("blue", "green","red","orange","purple"),lty=1:5)
-axis(side=1,at=c(1,2,3,4,5,6),labels=c("E3","E5","E8","E8-1","E16","E18"))
+## TF Gene Expression Boxplots
+tf<-read.csv("/Users/sarah/Desktop/Honors Project/TR_genes.csv",header=T)
+head(tf)
+
+# create dataframe
+tf<-data.frame(tf)
+
+# Melt into one long dataframe
+tfm <- melt(tf)
+
+# define value as logcpm
+logcpm<-tfm$value 
+
+# factor devlopment days in correct order
+tfm$Day <- factor(tfm$Day, levels=c("E3", "E5", "E8", "E16", "E18"))
+tfm$Day
+
+# create boxplot
+tf_boxplot<- ggplot(data=tfm) + geom_boxplot(aes(x=Day,y=logcpm,fill=Day)) + facet_wrap(~variable)
+
+# add title
+tf_boxplot + ggtitle("TF Gene Expressions")
