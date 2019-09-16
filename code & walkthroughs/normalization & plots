@@ -1,35 +1,83 @@
-## edgeR: Differntial test analysis using data from two independent RNA-seq studies
+################################################
+####  Objective: Identify genes associated  ####
+### with retina development of Gallus gallus ### 
+####  Differntial test analysis using data  ####
+####  from two independent RNA-seq studies  ####
+#################################################
 
-# combine datasets together 
+######################################################
+####          Description of the studies         #####
+######################################################
+### GSE89541: (RNA-seq data sampled at days 3,5,8) ###
+### Each day has 3 replicates, in total 9 samples  ###
+###       Raw gene count data was stored in E3     ###
+###                  ###########                   ###                   
+### GSE65938:(RNA-seq data sampled at days 8,16,18)### 
+### Each day has 2 replicates, in total 6 samples  ###
+###       Raw gene count data was stored in E8     ###
+###                 ############                   ###
+###     Note: Day 8 is common to both studies      ###
+######################################################
+
+######################################################
+####   Combining E3 and E8 studies in one study   ####
+####               based on common genes          ####
+####  Etot: Combined data frame with 9+6 samples  ####
+####  Total number of genes: 24881                ####
+######################################################
 
 Etot<-data.frame(E3,E8[,2:7])
+dim(Etot)   ### 24881    16
+# head(Etot)
 
-head(Etot)
-dim(Etot)
+########################################################
+### TMM normalization applied to account for library ###
+###  size depth differences between the two studies  ### 
+########################################################
 
-#Remove GeneID List
+#if (!requireNamespace("BiocManager"))
+# install.packages("BiocManager")
+#BiocManager::install()
+
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+#  install.packages("BiocManager")
+
+#BiocManager::install("edgeR", version = "3.9")
+#BiocManager::install("limma", version = "3.9")
+
+library(edgeR)
+
+########################################################
+####       Preparing data for TMM normalization     ####
+####        GeneID List is removed from Etot        ####
+####    Each sample corresponding to the day was    ####
+####                setup as a factor               ####
+########################################################
 
 Etot_raw<-Etot[,2:16]
-
-
 dayst<- c(rep("E3",3),rep("E5",3),rep("E8",3),rep("E8",2),rep("E16",2),rep("E18",2))
-dayst
+dayst ##  "E3"  "E3"  "E3"  "E5"  "E5"  "E5"  "E8"  "E8"  "E8" 
+# "E8"  "E8"  "E16" "E16" "E18" "E18"
 dtot=DGEList(counts=Etot_raw,group=factor(dayst))
+#dtot 
 
-dtot
+#########################################################
+#####               TMM Normalization                 ###
+#########################################################
 
-# TMM Normalization 
 dtot<-calcNormFactors(dtot)
 
-# set up design matrix
+### setting up design matrix ###
 design.t<-model.matrix(~dayst)
 rownames(design.t)<-colnames(dtot)
-design.t
-
+design.t  ##
 norm.counts.tot <- cpm(dtot)*1e6
-norm.counts.tot
+norm.counts.tot ##
 
-###Generalized Linear Model Differential Analysis Test
+#########################################################
+###              Gene differential analysis           ###
+###          Generalized Linear Model approach        ###
+#########################################################
 
 design.mat_tot <- model.matrix(~ 0 + dtot$samples$group)
 colnames(design.mat_tot) <- levels(dtot$samples$group)
@@ -39,36 +87,52 @@ dtot_2 <- estimateGLMCommonDisp(dtot,design.mat_tot)
 dtot_2 <- estimateGLMTrendedDisp(dtot_2,design.mat_tot, method="power")
 dtot_2 <- estimateGLMTagwiseDisp(dtot_2,design.mat_tot)
 
-# fit the model
+####  Model fitting  ####
+
 fit_tot <- glmFit(dtot_2, design.mat_tot)
 
-# liklihood ratio test 
+#### Liklihood ratio test ####
 lrt318_tot <- glmLRT(fit_tot, contrast=c(0,1,-1,0,0))
-lrt318_tot
+##lrt318_tot  
 
-# Extract top 200 differentially expressed genes
+#### Extracting top 200 differentially expressed genes ####
 x318<-topTags(lrt318_tot, n=200)
 
 
-## Plots used in Paper
+##########################################################
+###  Multi-dimensional scaling (MDS) plot of distances ###
+### between gene expression profiles from the 2 studies###
+##########################################################
+
+
+library(limma)
 
 ## Sample Distance (MDS Plot)
 plotMDS(dtot, method="bcv", col=as.numeric(dtot$samples$group))
 
+##############################################################
+### Constructing heatmap using top 200 most variable genes ###
+###           These gene are extracted from dtot           ###
+##############################################################
 
-## HEAT MAP
-dtot
+#install.packages("gplots")
+library("gplots")
+
+#install.packages("RColorBrewer")
+library(RColorBrewer)
+
+
 logcpm.tot <- cpm(dtot, prior.count=2, log=TRUE)
-head(logcpm.tot)
+## head(logcpm.tot)  
 
 var_genes.tot <- apply(logcpm.tot, 1, var)
 head(var_genes.tot)
-var_genes.tot
+##var_genes.tot
 
-# Get the gene names for the top 200 most variable genes
+### Gene names for the top 200 most variable genes are extracted ###
 select_var.tot <- names(sort(var_genes.tot, decreasing=TRUE))[1:200]
 head(select_var.tot)
-select_var.tot
+##select_var.tot
 
 # Subset logcounts matrix
 highly_variable_lcpm.tot <- logcpm.tot[select_var.tot,]
@@ -82,34 +146,62 @@ dim(highly_variable_lcpm.tot)
 mypalette <- brewer.pal(11,"RdYlBu")
 morecols <- colorRampPalette(mypalette)
 
-# Set up color vector for day variable
+### Set up color vector for group (day) variable ###
 col.cell.tot <- c("purple","orange","blue","pink","green","red")[dtot$samples$group]
 dtot$samples
 col.cell.tot
 
-# Plot the heatmap
+### Plot the heatmap ###
 heatmap.2(highly_variable_lcpm.tot,col=rev(morecols(50)),trace="none", main="Top 200 most variable genes across samples",ColSideColors=col.cell.tot,scale="row",labCol=dtot$samples$group)
 
+###########################################################
+### GENE EXPRESSION PLOT for specific genes of interest ###
+###########################################################
 
-## GENE EXPRESSION PLOT
-genes_plot.test<-read.csv("/Users/sarah/Desktop/Honors Project/genes.plot.test.csv",header=T)
-genes_plot.test<-data.frame(genes_plot.test)
-
-# Assign each row a gene name
-MOB3B<-genes_plot.test[1,2:7]
-PDE6C<-genes_plot.test[2,2:7]
-CLUL1<-genes_plot.test[3,2:7]
-CDK1<-genes_plot.test[4,2:7]
-ENO2<-genes_plot.test[5,2:7]
+#install.packages("reshape2")
+library(reshape2)
+#install.packages("ggplot2")
+library(ggplot2)
 
 
-# Create Plot
-x1=1:6
-plot(x=x1,y=MOB3B,xaxt="n", col="blue",type="l",ylim= c(-3,14),ylab="Log CPM", xlab="Day of Embryonic Development", main="Change in Gene Expression Across E3-E18 of Retina Development")
-lines(x=x1,y=PDE6C,col="green",lty=2)
-lines(x=x1,y=CLUL1,col="red",lty=3)
-lines(x=x1,y=CDK1,col="orange",lty=4)
-lines(x=x1,y=ENO2,col="purple",lty=5)
-legend("topleft",title="Gene Name",
-       legend=c("MOB3B","PDE6C","CLUL1","CDK1","ENO2"),col=c("blue", "green","red","orange","purple"),lty=1:5)
-axis(side=1,at=c(1,2,3,4,5,6),labels=c("E3","E5","E8","E8-1","E16","E18"))
+# Use PR_genes file
+
+pr<-data.frame(pr)
+
+# Melt into one long dataframe
+prm <- melt(pr)
+
+# Define value as logcpm
+logcpm<-prm$value 
+
+# Factor each devlopment day in correct order
+prm$Day <- factor(prm$Day, levels=c("E3", "E5", "E8", "E16", "E18"))
+prm$Day
+
+### Create boxplot ##
+
+pr_boxplot<- ggplot(data=prm) + geom_boxplot(aes(x=Day,y=logcpm,fill=Day)) + facet_wrap(~variable)
+pr_boxplot + ggtitle("PR Gene Expressions")
+
+
+
+### Transcription Factor Gene Expression Boxplot ###
+
+# Use TF_genes file
+
+tf<-data.frame(tf)
+
+# Melt into one long dataframe
+tfm <- melt(tf)
+
+logcpm<-tfm$value 
+
+tfm$Day <- factor(tfm$Day, levels=c("E3", "E5", "E8", "E16", "E18"))
+tfm$Day
+
+
+tf_boxplot<- ggplot(data=tfm) + geom_boxplot(aes(x=Day,y=logcpm,fill=Day)) + facet_wrap(~variable)
+tf_boxplot + ggtitle("TF Gene Expressions")
+
+
+
